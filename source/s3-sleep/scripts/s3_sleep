@@ -60,7 +60,7 @@ getDevicesByType() {
   local devices=()
   local device=""
   local type=""
-  
+
   while IFS= read -r line; do
     if [[ $line =~ ^\[.*\]$ ]]; then
       # New section - process previous if it matches target types
@@ -80,8 +80,8 @@ getDevicesByType() {
     elif [[ $line =~ ^type=\"(.*)\"$ ]]; then
       type="${BASH_REMATCH[1]}"
     fi
-  done < "$ini"
-  
+  done <"$ini"
+
   # Process last section if it matches target types
   if [[ -n $device && -n $type ]]; then
     for target_type in "${target_types[@]}"; do
@@ -91,7 +91,7 @@ getDevicesByType() {
       fi
     done
   fi
-  
+
   echo "${devices[@]}"
 }
 
@@ -112,7 +112,7 @@ getArray() {
 
 # Get list of all devices
 getDisks() {
-  disks=($(ls -l /dev/disk/by-id/[asun]*|awk -F/ '$0!~/part1/{print $7"="$5}'|grep -v 'nvme-eui'|sed 's/\(usb\|ata\|scsi\|ide\|nvme\)-//;s/ -> ..$//'))
+  disks=($(ls -l /dev/disk/by-id/[asun]* | awk -F/ '$0!~/part1/{print $7"="$5}' | grep -v 'nvme-eui' | sed 's/\(usb\|ata\|scsi\|ide\|nvme\)-//;s/ -> ..$//'))
 }
 
 # list devices outside of array
@@ -120,47 +120,47 @@ if [[ $1 == -ED ]]; then
   getFlash
   getCache
   getArray
-  array+=(${flash[@]});
+  array+=(${flash[@]})
   [[ -n $cache ]] && array+=(${cache[@]})
   getDisks
   # Remove not excludable devices from list
   for dev in ${array[@]}; do
     disks=(${disks[@]//*$dev=*})
   done
-  [[ -n $disks ]] && echo ${disks[@]}|sort
+  [[ -n $disks ]] && echo ${disks[@]} | sort
   exit 0
 fi
 
 usage() {
- echo
- echo "Usage: $program [-acnRFSLlVq] [-f type] [-I disk] [-N idle] [-i ip] [-d day] [-h hour] [-m time] [-t time] [-T time] [-e eth] [-w wol] [-b name] [-p name] [-C case] [-D 0-4] [-ED]"
- echo " -a          wait for array inactivity"
- echo " -c          exclude cache drive from array monitoring"
- echo " -f type     1 = device status monitoring only, 2 = device counters monitoring only"
- echo " -I disk     include outside of array disk (may be repeated for other disks)"
- echo " -n          wait for network inactivity"
- echo " -N idle     set TCP idle threshold"
- echo " -R          do DHCP renewal after wake-up"
- echo " -F          force gigabit speed after wake-up"
- echo " -S          sleep NOW"
- echo " -i ip       IP address to ping (may be repeated as many times as desired)"
- echo " -L          check remotely logged in users (SSH)"
- echo " -l          check locally logged in users"
- echo " -d day      Excluded day (may be repeated as many times as desired)"
- echo " -h hour     Excluded hour (may be repeated as many times as desired)"
- echo " -m time     extra delay after array inactivity"
- echo " -t time     interval of network / device inactivity"
- echo " -T time     network activity delay in minutes (default: 0)"
- echo " -e eth      select interface to monitor"
- echo " -w wol      set WOL options before sleep"
- echo " -W time     number of minutes to check in past for WOL packets"
- echo " -b name     execute shell script 'name' before sleep"
- echo " -p name     execute shell script 'name' after wake-up"
- echo " -C case     execute case (1) sleep or (2) shutdown"
- echo " -D 0-4      set debug reporting (0-4)"
- echo " -ED         print drives outside of array and exit"
- echo " -V          print program version and exit"
- echo " -q          terminate running background instance of s3_sleep"
+  echo
+  echo "Usage: $program [-acnRFSLlVq] [-f type] [-I disk] [-N idle] [-i ip] [-d day] [-h hour] [-m time] [-t time] [-T time] [-e eth] [-w wol] [-b name] [-p name] [-C case] [-D 0-4] [-ED]"
+  echo " -a          wait for array inactivity"
+  echo " -c          exclude cache drive from array monitoring"
+  echo " -f type     1 = device status monitoring only, 2 = device counters monitoring only"
+  echo " -I disk     include outside of array disk (may be repeated for other disks)"
+  echo " -n          wait for network inactivity"
+  echo " -N idle     set TCP idle threshold"
+  echo " -R          do DHCP renewal after wake-up"
+  echo " -F          force gigabit speed after wake-up"
+  echo " -S          sleep NOW"
+  echo " -i ip       IP address to ping (may be repeated as many times as desired)"
+  echo " -L          check remotely logged in users (SSH)"
+  echo " -l          check locally logged in users"
+  echo " -d day      Excluded day (may be repeated as many times as desired)"
+  echo " -h hour     Excluded hour (may be repeated as many times as desired)"
+  echo " -m time     extra delay after array inactivity"
+  echo " -t time     interval of network / device inactivity"
+  echo " -T time     network activity delay in minutes (default: 0)"
+  echo " -e eth      select interface to monitor"
+  echo " -w wol      set WOL options before sleep"
+  echo " -W time     number of minutes to check in past for WOL packets"
+  echo " -b name     execute shell script 'name' before sleep"
+  echo " -p name     execute shell script 'name' after wake-up"
+  echo " -C case     execute case (1) sleep or (2) shutdown"
+  echo " -D 0-4      set debug reporting (0-4)"
+  echo " -ED         print drives outside of array and exit"
+  echo " -V          print program version and exit"
+  echo " -q          terminate running background instance of s3_sleep"
 }
 
 # default settings
@@ -221,9 +221,9 @@ while getopts "acnN:i:f:I:d:h:m:t:T:e:C:w:W:RFqVSLlb:p:D:" opt; do
     T) delayNetwork=$OPTARG ;;
     e) eth=$OPTARG ;;
     C) case $OPTARG in
-         1) action=sleep ;;
-         2) action=shutdown ;;
-       esac ;;
+      1) action=sleep ;;
+      2) action=shutdown ;;
+    esac ;;
     w) setWol=$OPTARG ;;
     W) wolTrack=$OPTARG ;;
     R) dhcpRenew=yes ;;
@@ -235,8 +235,14 @@ while getopts "acnN:i:f:I:d:h:m:t:T:e:C:w:W:RFqVSLlb:p:D:" opt; do
     p) postRun=$OPTARG ;;
     D) debug=$OPTARG ;;
     q) quit_flag=yes ;;
-   \?) usage; exit ;;
-    V) echo $program version: $version ; exit ;;
+    \?)
+      usage
+      exit
+      ;;
+    V)
+      echo $program version: $version
+      exit
+      ;;
   esac
 done
 
@@ -251,11 +257,13 @@ done
 # It is intended to help in troubleshooting
 log() {
   case $debug in
-    1) logger -t "$program" "$1"
-       echo "`date`: $1" >>/boot/logs/$program.log ;;
+    1)
+      logger -t "$program" "$1"
+      echo "$(date): $1" >>/boot/logs/$program.log
+      ;;
     2) logger -t "$program" "$1" ;;
-    3) echo "`date`: $1" >>/boot/logs/$program.log ;;
-    4) echo "`date`: $1" ;;
+    3) echo "$(date): $1" >>/boot/logs/$program.log ;;
+    4) echo "$(date): $1" ;;
   esac
 }
 
@@ -294,7 +302,7 @@ HDD_activity() {
       [[ $monitor -ne 1 ]] && diskio=($(grep -Pho "^$dev \K\d+" /dev/shm/1 /dev/shm/2)) || diskio=
       if [[ $monitor -ne 2 ]] && sdspin /dev/$dev || [[ ${diskio[0]} != ${diskio[1]} ]]; then
         result=1
-        break;
+        break
       fi
     done
   fi
@@ -311,7 +319,7 @@ txrx_bytes() {
 TCP_activity() {
   result=
   if [[ $checkTCP == yes ]]; then
-    delta=$(((($(txrx_bytes)-$start)/1024)/60))
+    delta=$(((($(txrx_bytes) - $start) / 1024) / 60))
     [[ $delta -gt $idle ]] && result=1
   fi
   if [[ -n $result ]]; then
@@ -324,7 +332,7 @@ IP_activity() {
   result=
   if [[ -n $hosts ]]; then
     for ip in ${hosts[@]}; do
-      if [[ $(ping -n -q -c 2 $ip|awk '/received/ {print $4}') -gt 0 ]]; then
+      if [[ $(ping -n -q -c 2 $ip | awk '/received/ {print $4}') -gt 0 ]]; then
         result=1
         break
       fi
@@ -338,19 +346,19 @@ IP_activity() {
 
 WOL_activity() {
   local result=
-  
+
   # Return immediately if wolTrack is empty or zero
   [[ -z $wolTrack || $wolTrack -eq 0 ]] && return
-  
+
   # Calculate timestamp for X minutes ago
   local current_time=$(date +%s)
   local seconds_ago=$((wolTrack * 60))
   local target_time=$((current_time - seconds_ago))
-  
+
   # Check logs for WOL messages in the last X minutes by reading backwards
   local wol_logs
   local temp_file=$(mktemp)
-  
+
   tac /var/log/syslog 2>/dev/null | awk -v target_time="$target_time" '
     BEGIN {
       # Initialize month mapping
@@ -394,38 +402,38 @@ WOL_activity() {
         }
       }
     }
-  ' > "$temp_file"
-  
+  ' >"$temp_file"
+
   # Read the temp file preserving newlines
   if [[ -s "$temp_file" ]]; then
-    wol_logs=$(< "$temp_file")
+    wol_logs=$(<"$temp_file")
   fi
-  
+
   # Clean up temp file
   rm -f "$temp_file"
-  
+
   if [[ -n "$wol_logs" ]]; then
     # Count unique sources
     local ip_count=$(echo "$wol_logs" | grep "from IP:" | awk '{print $NF}' | sort -u | wc -l)
     local mac_count=$(echo "$wol_logs" | grep "from MAC:" | awk '{print $NF}' | sort -u | wc -l)
-    
+
     # Format summary
     local summary=""
     [[ $ip_count -gt 0 ]] && summary+="$ip_count unique IP(s)"
     [[ $ip_count -gt 0 && $mac_count -gt 0 ]] && summary+=", "
     [[ $mac_count -gt 0 ]] && summary+="$mac_count unique MAC(s)"
-    
+
     # Log the activity
     log "WOL activity detected within last $wolTrack minute(s) ($summary)"
     result=1
   fi
-  
+
   echo $result
 }
 
 TTY_activity() {
   result=
-  [[ $checkTTY == yes && $(ps -o command,tty|grep '^\-bash'|grep 'tty'|wc -l) -gt 0 ]] && result=1
+  [[ $checkTTY == yes && $(ps -o command,tty | grep '^\-bash' | grep 'tty' | wc -l) -gt 0 ]] && result=1
   if [[ -n $result ]]; then
     log "Local activity ongoing: console"
     echo $result
@@ -440,7 +448,7 @@ SSH_activity() {
     local ssh=$(grep -Pom1 'PORTSSH="\K[^"]+' $ident 2>/dev/null)
     [[ -z $telnet ]] && telnet=23
     [[ -z $ssh ]] && ssh=22
-    [[ $(lsof -O -w -l -i -n -P|awk "/:($telnet|$ssh)-.*\(ESTABLISHED\)\$/"|wc -l) -gt 0 ]] && result=1
+    [[ $(lsof -O -w -l -i -n -P | awk "/:($telnet|$ssh)-.*\(ESTABLISHED\)\$/" | wc -l) -gt 0 ]] && result=1
   fi
   if [[ -n $result ]]; then
     log "Remote activity ongoing: telnet/ssh"
@@ -449,12 +457,12 @@ SSH_activity() {
 }
 
 pre_sleep_activity() {
-# Set WOL MagicPacket options
+  # Set WOL MagicPacket options
   if [[ -n $setWol ]]; then
     log "Send WOL commands: $setWol"
     ethtool -s $eth wol $setWol
   fi
-# Additional commands to run
+  # Additional commands to run
   if [[ -x $preRun ]]; then
     log "Execute custom commands before sleep"
     $preRun
@@ -462,19 +470,19 @@ pre_sleep_activity() {
 }
 
 post_sleep_activity() {
-# Force NIC to use gigabit networking
+  # Force NIC to use gigabit networking
   if [[ $forceGb == yes ]]; then
     log "Set NIC to forced gigabit speed"
     ethtool -s $eth speed 1000
     sleep 2
   fi
-# Force a DHCP renewal (do not use for static-ip assignments)
+  # Force a DHCP renewal (do not use for static-ip assignments)
   if [[ $dhcpRenew == yes ]]; then
     log "Perform DHCP renewal"
     /sbin/dhcpcd -n
     sleep 5
   fi
-# Additional commands to run
+  # Additional commands to run
   if [[ -x $postRun ]]; then
     log "Execute custom commands after wake-up"
     $postRun
@@ -482,19 +490,19 @@ post_sleep_activity() {
 }
 
 system_sleep() {
-# Do pre-sleep activities
+  # Do pre-sleep activities
   pre_sleep_activity
-# Go to sleep
+  # Go to sleep
   log "Enter sleep state now"
   echo -n mem >/sys/power/state
-# Do post-sleep activities
+  # Do post-sleep activities
   log "Wake-up now"
   post_sleep_activity
 }
 
 system_down() {
   log "Shutdown system now"
-# Perform a 'clean' powerdown
+  # Perform a 'clean' powerdown
   if [[ -x /sbin/poweroff ]]; then
     /sbin/poweroff
   elif [[ -x /user/local/sbin/powerdown ]]; then
@@ -525,8 +533,8 @@ done
 for dev in ${disks[@]}; do
   disks=(${disks[@]//=*})
 done
-array=($(echo ${array[@]}|tr ' ' '\n'|sort))
-disks=($(echo ${disks[@]}|tr ' ' '\n'|sort))
+array=($(echo ${array[@]} | tr ' ' '\n' | sort))
+disks=($(echo ${disks[@]} | tr ' ' '\n' | sort))
 [[ -n $hosts ]] && devices=${hosts[@]} || devices=no
 
 echo "----------------------------------------------
@@ -548,7 +556,7 @@ lockfile=/var/lock/s3_sleep.lck
 if [[ -f $lockfile ]]; then
   # The file exists so read the PID to see if it is still running
   lock_pid=$(head -n 1 $lockfile)
-  if [[ -z $(ps -p $lock_pid|grep $lock_pid) ]]; then
+  if [[ -z $(ps -p $lock_pid | grep $lock_pid) ]]; then
     if [[ $quit_flag == no ]]; then
       # The process is not running, echo current PID into lock file
       echo $$ >$lockfile
@@ -606,7 +614,7 @@ while [[ -f $lockfile ]]; do
         tty_active=$(TTY_activity)
         ip_active=$(IP_activity)
         wol_active=$(WOL_activity)
-        
+
         # Check if network activity is above threshold
         if [[ -n $tcp_active ]]; then
           log "Network activity detected. Reset network delay timer."
@@ -623,7 +631,7 @@ while [[ -f $lockfile ]]; do
             networkDelay=-1
           fi
         fi
-        
+
         # Only sleep if network delay period is over and all activities are idle
         if [[ $networkDelay -lt 0 && -z $tcp_active && -z $ssh_active && -z $tty_active && -z $ip_active && -z $wol_active ]]; then
           log "Communication state is idle"
@@ -644,5 +652,5 @@ done &
 background_pid=$!
 echo $background_pid >$lockfile
 echo "$program process ID $background_pid started, To terminate it, type: $program -q"
-echo "$program process ID $background_pid started, To terminate it, type: $program -q"|logger -t$program
+echo "$program process ID $background_pid started, To terminate it, type: $program -q" | logger -t$program
 disown %%
