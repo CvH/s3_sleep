@@ -18,6 +18,6 @@ rm -rf /tmp/pkg-s3-sleep
 MD5=$(md5sum $script_dir/archive/dynamix.s3.sleep.txz | awk '{print $1}')
 
 # Update the MD5 in the PLG file
-sed -i "s/<!ENTITY MD5       \"[^\"]*\">/<!ENTITY MD5       \"$MD5\">/" $script_dir/unRAIDv6/dynamix.s3.sleep.plg
+sed -i "s/<!ENTITY MD5       \"[^\"]*\">/<!ENTITY MD5       \"$MD5\">/" $script_dir/unRAIDv7/dynamix.s3.sleep.plg
 
 echo "Updated MD5 checksum to $MD5"
