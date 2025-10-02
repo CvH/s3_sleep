@@ -1,4 +1,0 @@
-#!/bin/bash
-NMB=$(nmblookup -M -- - 2>/dev/null|grep -Pom1 '^\S+')
-[[ -n $(ip -4 addr|grep -Pom1 "inet $NMB") ]] && IMG="<img src='/plugins/dynamix.local.master/icons/localmaster.png' class='icon'>" || IMG=
-echo -n $IMG > /var/local/emhttp/localmaster.htm
